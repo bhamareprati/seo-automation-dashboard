@@ -9,6 +9,8 @@ function createAuditStore(prisma) {
     markRunning: (id) => update(id, { status: 'RUNNING', errorMessage: null, completedAt: null }),
     setStep: (id, { currentStep, progress }) => update(id, { currentStep, progress }),
     saveSignals: (id, signals) => update(id, { signals }),
+    saveResult: (id, { result, overallScore, scoreBreakdown, signals }) =>
+      update(id, { result, overallScore, scoreBreakdown, signals }),
     markCompleted: (id, { completedAt, signals }) =>
       update(id, {
         status: 'COMPLETED',

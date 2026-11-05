@@ -12,7 +12,7 @@ const AUDIT_STEPS = [
   { key: 'onPage', label: 'Analysing on-page SEO', progress: 48 },
   { key: 'robots', label: 'Checking robots.txt and sitemap', progress: 55 },
   { key: 'rankings', label: 'Fetching keyword rankings', progress: 62 },
-  { key: 'analysis', label: 'Analysing with Claude', progress: 85 },
+  { key: 'analysis', label: 'Analysing with Claude', sampleLabel: 'Preparing sample analysis', progress: 85 },
   { key: 'save', label: 'Saving audit results', progress: 90 },
   { key: 'pdf', label: 'Generating PDF report', progress: 96 },
   { key: 'delivery', label: 'Sending notifications', progress: 100 },

@@ -1,4 +1,6 @@
 const { Worker } = require('bullmq');
+const { chooseAnalysisSource } = require('../ai/analysis');
+const { analyzeWithClaude, createAnthropic } = require('../ai/claude');
 const { getEnv } = require('../lib/env');
 const { logger } = require('../lib/logger');
 const { prisma } = require('../lib/prisma');
@@ -16,14 +18,29 @@ function auditDependencies() {
   const store = createAuditStore(prisma);
   const steps = createSteps({
     store,
+    env,
     usedMocks: env.useMocks,
     delayMs: env.MOCK_STEP_DELAY_MS,
     timeoutMs: env.CRAWL_REQUEST_TIMEOUT_MS,
+    getRedis: async () => {
+      const queue = getAuditQueue();
+      await queue.waitUntilReady();
+      return queue.client;
+    },
+    analyzeWithClaude: (input) =>
+      analyzeWithClaude(input, { anthropic: createAnthropic(env.ANTHROPIC_API_KEY), model: env.ANTHROPIC_MODEL }),
   });
   return {
     store,
     logger,
-    runAudit: (auditId) => runAudit(auditId, { store, steps, isStepDone, logger }),
+    runAudit: (auditId) =>
+      runAudit(auditId, {
+        store,
+        steps,
+        isStepDone,
+        usesSampleAnalysis: chooseAnalysisSource(env) === 'mock',
+        logger,
+      }),
   };
 }
 

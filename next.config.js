@@ -6,6 +6,7 @@ const nextConfig = {
   experimental: {
     // These run on the server only, so Next.js must not bundle them.
     serverComponentsExternalPackages: [
+      '@anthropic-ai/sdk',
       'bullmq',
       'ioredis',
       '@prisma/client',

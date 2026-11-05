@@ -252,10 +252,11 @@ describe('signal steps in the pipeline', () => {
       markRunning: vi.fn(async () => { audit.status = 'RUNNING'; }),
       setStep: vi.fn(async (_, change) => Object.assign(audit, change)),
       saveSignals: vi.fn(async (_, signals) => { saved.push(signals); audit.signals = signals; }),
+      saveResult: vi.fn(async (_, change) => Object.assign(audit, change)),
       markCompleted: vi.fn(async (_, change) => Object.assign(audit, change, { status: 'COMPLETED', progress: 100 })),
       markFailed: vi.fn(async (_, change) => Object.assign(audit, change, { status: 'FAILED' })),
     };
-    const steps = createSteps({ store, usedMocks: true, delayMs: 0, timeoutMs: 100, fetchPage, sleep: async () => {} });
+    const steps = createSteps({ store, env: {}, usedMocks: true, delayMs: 0, timeoutMs: 100, fetchPage, sleep: async () => {} });
     return { audit, store, steps, isStepDone };
   }
 

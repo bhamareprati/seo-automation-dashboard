@@ -5,9 +5,12 @@ const { NotFoundError } = require('../lib/errors');
  * Runs one audit through every step, in the spec's order. This is the only code that knows the steps;
  * runners just fetch a job and call it. Progress never goes backwards, even on a retry.
  * @param {string} auditId
- * @param {{ store: object, steps: Record<string, Function>, isStepDone?: Function, logger: object, now?: () => Date }} deps
+ * @param {{ store: object, steps: Record<string, Function>, isStepDone?: Function, usesSampleAnalysis?: boolean, logger: object, now?: () => Date }} deps
  */
-async function runAudit(auditId, { store, steps, isStepDone = () => false, logger, now = () => new Date() }) {
+async function runAudit(
+  auditId,
+  { store, steps, isStepDone = () => false, usesSampleAnalysis = false, logger, now = () => new Date() },
+) {
   const audit = await store.load(auditId);
   if (!audit) throw new NotFoundError(`Audit ${auditId} not found`);
   if (audit.status === 'COMPLETED' && !isRetryable(audit)) return { skipped: true };
@@ -22,7 +25,9 @@ async function runAudit(auditId, { store, steps, isStepDone = () => false, logge
       progress = Math.max(progress, step.progress);
       continue;
     }
-    await store.setStep(auditId, { currentStep: step.label, progress });
+    // Never say "Analysing with Claude" when Claude isn't being used.
+    const currentStep = usesSampleAnalysis && step.sampleLabel ? step.sampleLabel : step.label;
+    await store.setStep(auditId, { currentStep, progress });
     const startedAt = Date.now();
     await steps[step.key](context);
     const ms = Date.now() - startedAt;

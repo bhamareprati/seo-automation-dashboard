@@ -80,7 +80,7 @@ describe('runAudit', () => {
 
   it('every step has an implementation', () => {
     const sleep = vi.fn(async () => {});
-    const steps = createSteps({ store: {}, usedMocks: true, delayMs: 5, timeoutMs: 100, sleep });
+    const steps = createSteps({ store: {}, env: {}, usedMocks: true, delayMs: 5, timeoutMs: 100, sleep });
     expect(Object.keys(steps).sort()).toEqual(AUDIT_STEPS.map((s) => s.key).sort());
   });
 });

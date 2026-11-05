@@ -12,7 +12,7 @@ const POLL_MS = 2000;
 /** done, current or pending, from the audit's status and current step. */
 function stepState(step, index, audit) {
   if (audit.status === 'COMPLETED') return 'done';
-  const currentIndex = AUDIT_STEPS.findIndex((s) => s.label === audit.currentStep);
+  const currentIndex = AUDIT_STEPS.findIndex((s) => s.label === audit.currentStep || s.sampleLabel === audit.currentStep);
   if (currentIndex === -1) return 'pending';
   if (index < currentIndex) return 'done';
   if (index === currentIndex) return audit.status === 'FAILED' ? 'failed' : 'current';
@@ -111,7 +111,7 @@ export function AuditProgress({ auditId, clientName, initial }) {
               </span>
               <span className={state === 'pending' ? 'text-muted-foreground' : undefined}>
                 <span className="sr-only">{sr}: </span>
-                {step.label}
+                {step.sampleLabel && audit.currentStep === step.sampleLabel ? step.sampleLabel : step.sampleLabel && audit.dataMode?.aiSource === 'mock' ? step.sampleLabel : step.label}
               </span>
             </li>
           );
