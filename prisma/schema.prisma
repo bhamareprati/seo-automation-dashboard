@@ -1,0 +1,64 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+model Client {
+  id           String   @id @default(cuid())
+  name         String
+  websiteUrl   String   @unique
+  businessType String
+  city         String
+  state        String
+  whatsapp     String?
+  email        String?
+  createdAt    DateTime @default(now())
+  audits       Audit[]
+}
+model Audit {
+  id             String      @id @default(cuid())
+  clientId       String
+  client         Client      @relation(fields: [clientId], references: [id])
+  status         AuditStatus @default(QUEUED)
+  progress       Int         @default(0)        // 0-100, shown in admin portal
+  currentStep    String?
+  triggeredBy    String      @default("manual") // manual | cron
+  overallScore   Int?
+  scoreBreakdown Json?
+  signals        Json?                          // raw crawl + mock API data
+  result         Json?                          // Claude JSON output
+  pdfPath        String?
+  errorMessage   String?
+  createdAt      DateTime    @default(now())
+  completedAt    DateTime?
+  notifications  Notification[]
+  report         AuditReport?                   // added: durable PDF bytes (see docs/PRD.md G-03)
+  @@index([clientId, createdAt])
+}
+model Notification {
+  id        String   @id @default(cuid())
+  auditId   String
+  audit     Audit    @relation(fields: [auditId], references: [id])
+  channel   String                              // whatsapp | email
+  status    String                              // mock_sent | sent | failed
+  providerId String?
+  createdAt DateTime @default(now())
+}
+enum AuditStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+// Added to the spec's schema. Downloads read from here because /tmp is not shared on Vercel.
+model AuditReport {
+  auditId   String   @id
+  audit     Audit    @relation(fields: [auditId], references: [id])
+  bytes     Bytes
+  sizeBytes Int
+  createdAt DateTime @default(now())
+}
