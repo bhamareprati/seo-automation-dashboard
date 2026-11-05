@@ -28,7 +28,15 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npm run build
+      # On failure, the end of the build output also appears as an annotation on the run's summary page.
+      - name: Run npm run build
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! npm run build 2>&1 | tee build.log; then
+            echo "::error title=Build failed::$(tail -n 30 build.log | sed ':a;N;$!ba;s/\n/%0A/g')"
+            exit 1
+          fi
 
   deploy:
     name: Deploy to Vercel production
