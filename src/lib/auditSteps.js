@@ -20,4 +20,12 @@ const AUDIT_STEPS = [
 
 const ACTIVE_STATUSES = ['QUEUED', 'RUNNING'];
 
-module.exports = { WAITING_LABEL, AUDIT_STEPS, ACTIVE_STATUSES };
+/** Labels and colours from docs/UI_UX_DESIGN.md section 8. */
+const STATUS_DISPLAY = {
+  QUEUED: { label: 'Waiting', className: 'text-muted-foreground' },
+  RUNNING: { label: 'Running', className: 'text-methylene' },
+  COMPLETED: { label: 'Complete', className: 'text-good' },
+  FAILED: { label: 'Failed', className: 'text-poor' },
+};
+
+module.exports = { WAITING_LABEL, AUDIT_STEPS, ACTIVE_STATUSES, STATUS_DISPLAY };

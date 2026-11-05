@@ -1,16 +1,5 @@
-const fs = require('node:fs');
 const { expect, test } = require('@playwright/test');
-
-// Demo logins live in the README, as the spec asks.
-const readme = fs.readFileSync('README.md', 'utf8');
-const passwordFor = (email) => readme.match(new RegExp(`\\| ${email} \\| (\\S+) \\|`))[1];
-
-async function signIn(page, email) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(passwordFor(email));
-  await page.getByRole('button', { name: 'Sign in' }).click();
-}
+const { signIn } = require('./helpers');
 
 test('unauthenticated visitor is redirected to sign in', async ({ page }) => {
   for (const path of ['/', '/admin', '/admin/clients', '/client']) {
