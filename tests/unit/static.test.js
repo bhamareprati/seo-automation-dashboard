@@ -116,6 +116,10 @@ describe('code rules', () => {
     const tracked = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).split('\n');
     const leaked = tracked.filter((f) => /^(docs\/|\.neon$|\.vercel\/)|(^|\/)\.env($|\.(?!example$))/.test(f));
     expect(leaked).toEqual([]);
+
+    // Covers .gitignore and this machine's own .git/info/exclude rules.
+    const ignoredButTracked = execFileSync('git', ['ls-files', '--cached', '--ignored', '--exclude-standard'], { cwd: root, encoding: 'utf8' });
+    expect(ignoredButTracked.trim()).toBe('');
   });
 
   it('no credentials or private identifiers are in tracked files', () => {
