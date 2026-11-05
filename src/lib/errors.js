@@ -1,3 +1,5 @@
+const { logger } = require('./logger');
+
 /** Base class. `messageId` points at the user-facing text in docs/UI_UX_DESIGN.md section 9. */
 class AppError extends Error {
   constructor(message, { code, status = 500, messageId } = {}) {
@@ -59,6 +61,8 @@ function toErrorResponse(err) {
   if (err instanceof QueueUnavailableError) {
     return { status: err.status, body: { error: err.message, code: err.code } };
   }
+  // Log the error's code only. Messages can contain connection strings or user data.
+  logger.error('unhandled_error', { code: err?.code || err?.errorCode || err?.name || 'unknown' });
   return { status: 500, body: { error: 'Something went wrong.', code: 'INTERNAL' } };
 }
 

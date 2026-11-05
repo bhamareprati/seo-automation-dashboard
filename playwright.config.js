@@ -6,6 +6,8 @@ const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 module.exports = defineConfig({
   testDir: './tests/e2e',
   timeout: 180000,
+  // The first database connection from a developer machine can take over 6 s, so checks wait up to 15 s.
+  expect: { timeout: 15000 },
   fullyParallel: false,
   workers: 1,
   reporter: 'list',

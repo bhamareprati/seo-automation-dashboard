@@ -19,8 +19,10 @@ playwright-report/
 test-results/
 
 # Local tooling
+skills-lock.json
 .vercel/
 *.log
 .DS_Store
 Thumbs.db
 next-env.d.ts
+.neon

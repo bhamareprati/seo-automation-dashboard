@@ -77,6 +77,18 @@ describe('code rules', () => {
     expect(offenders.map(rel)).toEqual([]);
   });
 
+  it('next/image is not used, and the image optimizer stays off', () => {
+    const offenders = sourceFiles().filter((f) => fs.readFileSync(f, 'utf8').includes('next/image'));
+    expect(offenders.map(rel)).toEqual([]);
+    expect(fs.readFileSync(path.join(root, 'next.config.js'), 'utf8')).toContain('images: { unoptimized: true }');
+  });
+
+  it('local servers listen on this machine only', () => {
+    const { scripts } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+    expect(scripts.dev).toContain('-H 127.0.0.1');
+    expect(scripts.start).toContain('-H 127.0.0.1');
+  });
+
   it('no process.env outside env.js and mocks/index.js', () => {
     const allowed = new Set(['src/lib/env.js', 'src/mocks/index.js']);
     const offenders = sourceFiles()
