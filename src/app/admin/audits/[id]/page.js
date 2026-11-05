@@ -17,11 +17,12 @@ export default async function AuditPage({ params }) {
       errorMessage: true,
       createdAt: true,
       client: { select: { name: true, websiteUrl: true } },
+      report: { select: { auditId: true } },
     },
   });
   if (!audit) notFound();
 
-  const { client, ...initial } = audit;
+  const { client, report, ...initial } = audit;
   const started = audit.createdAt.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
 
   return (
@@ -34,7 +35,7 @@ export default async function AuditPage({ params }) {
       <AuditProgress
         auditId={audit.id}
         clientName={client.name}
-        initial={{ ...initial, createdAt: audit.createdAt.toISOString() }}
+        initial={{ ...initial, createdAt: audit.createdAt.toISOString(), hasReport: Boolean(report) }}
       />
     </>
   );

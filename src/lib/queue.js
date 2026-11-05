@@ -53,6 +53,9 @@ function withTimeout(promise, ms) {
 async function addJob(auditId) {
   const target = getAuditQueue();
   await target.waitUntilReady();
+  // BullMQ ignores an add when the job ID still exists, so a retry must clear the old job first.
+  const previous = await target.getJob(auditId);
+  if (previous) await previous.remove();
   await target.add(JOB_NAME, { auditId }, jobOptions(auditId));
 }
 

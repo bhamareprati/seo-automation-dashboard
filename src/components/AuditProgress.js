@@ -94,9 +94,20 @@ export function AuditProgress({ auditId, clientName, initial }) {
 
       {stale ? <p className="mt-1 text-data text-muted-foreground">Reconnecting to get the latest progress.</p> : null}
 
-      {audit.status === 'FAILED' && audit.errorMessage ? (
+      {audit.errorMessage ? (
         <p role="alert" data-testid="audit-error" className="mt-3 text-poor">
           {audit.errorMessage}
+        </p>
+      ) : null}
+
+      {audit.status === 'COMPLETED' && audit.hasReport ? (
+        <p className="mt-4">
+          <a
+            href={`/api/audit/${auditId}/report`}
+            className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-data font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Download PDF
+          </a>
         </p>
       ) : null}
 

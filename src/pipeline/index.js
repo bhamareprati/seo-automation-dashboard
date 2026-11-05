@@ -6,6 +6,7 @@ const { logger } = require('../lib/logger');
 const { prisma } = require('../lib/prisma');
 const { QUEUE_NAME, getAuditQueue, getQueueRedis } = require('../lib/queue');
 const { createRedis } = require('../lib/redis');
+const { launchBrowser } = require('../reports/render');
 const { createAuditStore } = require('./auditStore');
 const { cronTick } = require('./cronTick');
 const { runAudit } = require('./runAudit');
@@ -22,6 +23,9 @@ function auditDependencies() {
     usedMocks: env.useMocks,
     delayMs: env.MOCK_STEP_DELAY_MS,
     timeoutMs: env.CRAWL_REQUEST_TIMEOUT_MS,
+    logger,
+    reportsDir: env.REPORTS_DIR,
+    launchBrowser: () => launchBrowser(env),
     getRedis: getQueueRedis,
     analyzeWithClaude: (input) =>
       analyzeWithClaude(input, { anthropic: createAnthropic(env.ANTHROPIC_API_KEY), model: env.ANTHROPIC_MODEL }),

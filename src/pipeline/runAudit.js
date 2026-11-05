@@ -39,12 +39,13 @@ async function runAudit(
   await store.markCompleted(auditId, {
     completedAt: now(),
     signals: withStepTimes(context),
+    note: context.completionNote,
   });
   return { skipped: false };
 }
 
 /** A completed audit only runs again when its PDF is missing (docs/TRD.md section 9.3). */
-const isRetryable = (audit) => Boolean(audit.result) && !audit.pdfPath;
+const isRetryable = (audit) => Boolean(audit.result) && !audit.report;
 
 /** Adds this run's timings to the signals, keeping any timings from an earlier attempt. */
 function withStepTimes({ signals, stepMs }) {

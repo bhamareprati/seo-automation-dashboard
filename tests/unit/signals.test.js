@@ -253,10 +253,24 @@ describe('signal steps in the pipeline', () => {
       setStep: vi.fn(async (_, change) => Object.assign(audit, change)),
       saveSignals: vi.fn(async (_, signals) => { saved.push(signals); audit.signals = signals; }),
       saveResult: vi.fn(async (_, change) => Object.assign(audit, change)),
+      saveReport: vi.fn(async () => {}),
+      addNotification: vi.fn(async () => {}),
       markCompleted: vi.fn(async (_, change) => Object.assign(audit, change, { status: 'COMPLETED', progress: 100 })),
       markFailed: vi.fn(async (_, change) => Object.assign(audit, change, { status: 'FAILED' })),
     };
-    const steps = createSteps({ store, env: {}, usedMocks: true, delayMs: 0, timeoutMs: 100, fetchPage, sleep: async () => {} });
+    const steps = createSteps({
+      store,
+      env: {},
+      logger,
+      usedMocks: true,
+      delayMs: 0,
+      timeoutMs: 100,
+      fetchPage,
+      sleep: async () => {},
+      render: async () => Buffer.from('%PDF-'),
+      storeFile: async () => '/tmp/reports/a1.pdf',
+      deliver: async () => [],
+    });
     return { audit, store, steps, isStepDone };
   }
 
