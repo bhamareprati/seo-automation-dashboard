@@ -1,15 +1,25 @@
-const { AUDIT_STEPS } = require('../lib/auditSteps');
+const { createSignalSteps, hasAllSignals, SIGNAL_STEP_KEYS } = require('./signalSteps');
 
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const LATER_STEPS = ['analysis', 'save', 'pdf', 'delivery'];
 
 /**
- * Placeholder steps, so the queue and live progress can be proven first.
- * Phases 3, 4 and 5 replace these one by one.
+ * Placeholders for the steps still to come. Phases 4 and 5 replace them.
  * @param {{ delayMs: number, sleep?: (ms: number) => Promise<void> }} options
- * @returns {Record<string, (context: object) => Promise<void>>}
  */
 function createStubSteps({ delayMs, sleep = pause }) {
-  return Object.fromEntries(AUDIT_STEPS.map(({ key }) => [key, () => sleep(delayMs)]));
+  return Object.fromEntries(LATER_STEPS.map((key) => [key, () => sleep(delayMs)]));
 }
 
-module.exports = { createStubSteps };
+/** All the steps of a run, by key. */
+function createSteps(options) {
+  return { ...createSignalSteps(options), ...createStubSteps({ delayMs: options.delayMs, sleep: options.sleep }) };
+}
+
+/** True when an earlier attempt already finished this step. */
+function isStepDone(key, audit) {
+  if (SIGNAL_STEP_KEYS.includes(key)) return hasAllSignals(audit.signals);
+  return false;
+}
+
+module.exports = { createStubSteps, createSteps, isStepDone };

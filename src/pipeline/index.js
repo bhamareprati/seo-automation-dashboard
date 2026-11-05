@@ -8,16 +8,22 @@ const { createAuditStore } = require('./auditStore');
 const { cronTick } = require('./cronTick');
 const { runAudit } = require('./runAudit');
 const { processAuditJob, runNextJob } = require('./runNextJob');
-const { createStubSteps } = require('./steps');
+const { createSteps, isStepDone } = require('./steps');
 
 /** Connects the pipeline to the real database and steps. Everything is created on first use. */
 function auditDependencies() {
+  const env = getEnv();
   const store = createAuditStore(prisma);
-  const steps = createStubSteps({ delayMs: getEnv().MOCK_STEP_DELAY_MS });
+  const steps = createSteps({
+    store,
+    usedMocks: env.useMocks,
+    delayMs: env.MOCK_STEP_DELAY_MS,
+    timeoutMs: env.CRAWL_REQUEST_TIMEOUT_MS,
+  });
   return {
     store,
     logger,
-    runAudit: (auditId) => runAudit(auditId, { store, steps, logger }),
+    runAudit: (auditId) => runAudit(auditId, { store, steps, isStepDone, logger }),
   };
 }
 

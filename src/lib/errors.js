@@ -2,12 +2,14 @@ const { logger } = require('./logger');
 
 /** Base class. `messageId` points at the user-facing text in docs/UI_UX_DESIGN.md section 9. */
 class AppError extends Error {
-  constructor(message, { code, status = 500, messageId } = {}) {
+  constructor(message, { code, status = 500, messageId, retryable = true, integration } = {}) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
     this.status = status;
     this.messageId = messageId;
+    this.retryable = retryable; // false: retrying the job can't help, so fail at once
+    this.integration = integration;
   }
 }
 
@@ -42,10 +44,15 @@ const QueueUnavailableError = defineError('QueueUnavailableError', {
   status: 503,
   messageId: 'M-QUEUE-DOWN',
 });
-const CrawlError = defineError('CrawlError', { code: 'CRAWL_FAILED', messageId: 'M-FAIL-CRAWL' });
+const CrawlError = defineError('CrawlError', {
+  code: 'CRAWL_FAILED',
+  messageId: 'M-FAIL-CRAWL',
+  retryable: false,
+});
 const IntegrationNotConfiguredError = defineError('IntegrationNotConfiguredError', {
   code: 'NOT_CONFIGURED',
   messageId: 'M-FAIL-CONFIG',
+  retryable: false,
 });
 const AiResponseError = defineError('AiResponseError', { code: 'AI_FAILED', messageId: 'M-FAIL-AI' });
 const PdfError = defineError('PdfError', { code: 'PDF_FAILED', messageId: 'M-PDF-MISSING' });

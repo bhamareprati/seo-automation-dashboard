@@ -9,7 +9,7 @@ const { CrawlError } = require('../../src/lib/errors.js');
 const { message } = require('../../src/lib/messages.js');
 const { runAudit } = require('../../src/pipeline/runAudit.js');
 const { failureMessage, processAuditJob, runNextJob } = require('../../src/pipeline/runNextJob.js');
-const { createStubSteps } = require('../../src/pipeline/steps.js');
+const { createSteps } = require('../../src/pipeline/steps.js');
 
 const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 
@@ -78,10 +78,10 @@ describe('runAudit', () => {
     expect(store.markCompleted).not.toHaveBeenCalled();
   });
 
-  it('stub steps cover every step', () => {
+  it('every step has an implementation', () => {
     const sleep = vi.fn(async () => {});
-    const steps = createStubSteps({ delayMs: 5, sleep });
-    expect(Object.keys(steps)).toEqual(AUDIT_STEPS.map((s) => s.key));
+    const steps = createSteps({ store: {}, usedMocks: true, delayMs: 5, timeoutMs: 100, sleep });
+    expect(Object.keys(steps).sort()).toEqual(AUDIT_STEPS.map((s) => s.key).sort());
   });
 });
 
@@ -98,7 +98,9 @@ describe('job failure handling', () => {
   it('the last failure marks the audit FAILED with a readable message', async () => {
     const store = fakeStore({ currentStep: 'Crawling website' });
     const fail = async () => { throw new Error('boom'); };
-    await expect(processAuditJob(job(1), { runAudit: fail, store, logger })).rejects.toThrow('boom');
+    await expect(processAuditJob(job(1), { runAudit: fail, store, logger })).rejects.toMatchObject({
+      name: 'UnrecoverableError',
+    });
     expect(store.audit.status).toBe('FAILED');
     expect(store.audit.errorMessage).toBe(message('M-FAIL-GENERIC', { step: 'Crawling website' }));
   });

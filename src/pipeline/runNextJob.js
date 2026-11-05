@@ -1,4 +1,5 @@
 const { randomUUID } = require('node:crypto');
+const { UnrecoverableError } = require('bullmq');
 const { message } = require('../lib/messages');
 
 /** Longer than Vercel's 300 second limit, so a live function never loses its job's lock. */
@@ -28,11 +29,12 @@ async function processAuditJob(job, { runAudit, store, logger }) {
       attempt: job.attemptsMade + 1,
       code: err?.code || err?.errorCode || err?.name,
     });
-    if (isFinalAttempt(job)) {
-      const audit = await store.load(auditId);
-      await store.markFailed(auditId, { errorMessage: failureMessage(err, audit) });
-    }
-    throw err;
+    if (err?.retryable !== false && !isFinalAttempt(job)) throw err;
+
+    const audit = await store.load(auditId);
+    await store.markFailed(auditId, { errorMessage: failureMessage(err, audit) });
+    // Tells BullMQ not to schedule another attempt, because the audit has already been marked FAILED.
+    throw new UnrecoverableError(err?.code || err?.name || 'audit failed');
   }
 }
 
