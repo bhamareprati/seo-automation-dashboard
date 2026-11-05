@@ -1,6 +1,9 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+
+const require = createRequire(import.meta.url);
 
 const root = path.resolve(__dirname, '../..');
 const srcDir = path.join(root, 'src');
@@ -81,6 +84,18 @@ describe('code rules', () => {
     const offenders = sourceFiles().filter((f) => fs.readFileSync(f, 'utf8').includes('next/image'));
     expect(offenders.map(rel)).toEqual([]);
     expect(fs.readFileSync(path.join(root, 'next.config.js'), 'utf8')).toContain('images: { unoptimized: true }');
+  });
+
+  it('security headers are configured', () => {
+    const config = require(path.join(root, 'next.config.js'));
+    expect(config.poweredByHeader).toBe(false);
+    return config.headers().then(([rule]) => {
+      expect(rule.source).toBe('/:path*');
+      expect(Object.fromEntries(rule.headers.map((h) => [h.key, h.value]))).toMatchObject({
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+      });
+    });
   });
 
   it('local servers listen on this machine only', () => {

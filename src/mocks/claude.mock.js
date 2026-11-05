@@ -55,7 +55,7 @@ module.exports = {
       priority: 'HIGH',
       category: 'OnPage',
       finding: 'The homepage has no meta description, and its title is only 21 characters with no location or service.',
-      fix: 'Set the title to "Dentist in Pune | Implants & Root Canal | Example Dental Clinic" and add a meta description of about 150 characters.',
+      fix: 'Set the title to name the service and city, such as "Dentist in Pune | Implants & Root Canal", and add a meta description of about 150 characters.',
       estimated_impact: 'High',
       effort: 'Hours',
       falsifiability_check: 'Click-through rate for "dental clinic in pune" rises above its current 4.3% within 8 weeks in Search Console.',

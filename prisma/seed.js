@@ -42,9 +42,19 @@ function seedClients(now = new Date()) {
   ];
 }
 
+/** Clears audit data so a demo starts clean. Run with: npm run db:seed -- --reset */
+async function resetDemoData(prisma) {
+  await prisma.notification.deleteMany({});
+  await prisma.auditReport.deleteMany({});
+  await prisma.audit.deleteMany({});
+  await prisma.client.deleteMany({});
+  process.stdout.write('Cleared clients, audits, reports and notifications\n');
+}
+
 async function main() {
   const prisma = new PrismaClient();
   try {
+    if (process.argv.includes('--reset')) await resetDemoData(prisma);
     for (const client of seedClients()) {
       // Existing rows are left alone, so re-running never resets a client's dates.
       await prisma.client.upsert({ where: { websiteUrl: client.websiteUrl }, update: {}, create: client });
