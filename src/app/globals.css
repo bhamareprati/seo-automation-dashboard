@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Tokens from docs/UI_UX_DESIGN.md section 3, mapped onto the names shadcn/ui components expect. */
+@layer base {
+  :root {
+    --background: #f4f7f8; /* slide */
+    --foreground: #1b2a33; /* ink */
+    --card: #ffffff;
+    --card-foreground: #1b2a33;
+    --popover: #ffffff;
+    --popover-foreground: #1b2a33;
+    --primary: #17507f; /* methylene */
+    --primary-foreground: #ffffff;
+    --secondary: #e9eef0; /* wash */
+    --secondary-foreground: #1b2a33;
+    --muted: #e9eef0;
+    --muted-foreground: #55656e; /* muted */
+    --accent: #e9eef0;
+    --accent-foreground: #1b2a33;
+    --destructive: #b3261e; /* poor */
+    --destructive-foreground: #ffffff;
+    --border: #d3dce0; /* rule */
+    --input: #d3dce0;
+    --ring: #17507f;
+    --radius: 4px;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-variant-numeric: tabular-nums;
+  }
+
+  body {
+    @apply bg-background font-sans text-body text-foreground antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
