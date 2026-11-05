@@ -98,6 +98,21 @@ describe('code rules', () => {
     });
   });
 
+  it('the pipeline deploys only after tests pass, and only from main', () => {
+    const workflow = fs.readFileSync(path.join(root, '.github/workflows/ci-cd.yml'), 'utf8');
+    const deploy = workflow.slice(workflow.indexOf('  deploy:'));
+    expect(deploy).toContain('needs: test');
+    expect(deploy).toContain("github.ref == 'refs/heads/main'");
+    expect(workflow).not.toMatch(/--prebuilt\s+--prod|vercel@latest/);
+    expect(JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8')).git.deploymentEnabled).toBe(false);
+  });
+
+  it('confidential and personal documents stay out of Git', () => {
+    const ignore = fs.readFileSync(path.join(root, '.gitignore'), 'utf8');
+    expect(ignore).toContain('docs/00_ASSESSMENT_SPEC.md');
+    expect(ignore).toContain('docs/INTERVIEW_NOTES.md');
+  });
+
   it('local servers listen on this machine only', () => {
     const { scripts } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
     expect(scripts.dev).toContain('-H 127.0.0.1');

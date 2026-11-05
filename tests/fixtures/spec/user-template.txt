@@ -1,0 +1,36 @@
+Analyse the following SEO signals for: {URL}
+Business type: {BUSINESS_TYPE}
+Business location: {CITY}, {STATE}, India
+=== ON-PAGE DATA ===
+{ON_PAGE_JSON}
+=== TECHNICAL DATA ===
+{TECHNICAL_JSON}
+=== CORE WEB VITALS ===
+{CWV_JSON}
+=== SCHEMA.ORG DATA ===
+{SCHEMA_JSON}
+=== GOOGLE SEARCH CONSOLE ===
+{GSC_JSON}
+=== KEYWORD RANKINGS ===
+{RANKINGS_JSON}
+Respond ONLY with this JSON structure — no other text:
+{
+  "audit_version": "v1.0",
+  "overall_score": <integer 0-100>,
+  "score_breakdown": { "technical": <0-100>, "on_page": <0-100>,
+                       "content": <0-100>, "core_web_vitals": <0-100>,
+                       "schema": <0-100> },
+  "critical_issues": [<max 5 items>],
+  "important_issues": [<max 8 items>],
+  "quick_wins": [<max 5 items — effort <= 2 hours>],
+  "recommendations": [{
+    "priority": "CRITICAL|HIGH|MEDIUM|LOW",
+    "category": "Technical|OnPage|Content|Schema|CWV",
+    "finding": "<what is wrong>",
+    "fix": "<exact action to take>",
+    "estimated_impact": "High|Medium|Low",
+    "effort": "Hours|Days|Weeks",
+    "falsifiability_check": "<how to verify this worked>"
+  }],
+  "executive_summary": "<3 sentences max, plain English>"
+}

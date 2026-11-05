@@ -1,0 +1,56 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A newer push to the same branch replaces an older run still in progress.
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint, test and build
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    name: Deploy to Vercel production
+    # Only after the tests pass, and never from a pull request.
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+      # Without --prebuilt, Vercel builds the code itself. Prisma's engine must match Vercel's runtime,
+      # so building here on Ubuntu and uploading the result would break the database connection.
+      - name: Deploy
+        run: npx --yes vercel@65.11.0 deploy --prod --yes --token="$VERCEL_TOKEN"
+      - name: Check the live site
+        if: vars.PRODUCTION_URL != ''
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: curl --fail --silent --show-error --retry 5 --retry-delay 10 --retry-all-errors "$PRODUCTION_URL/api/health"

@@ -3,8 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const root = path.resolve(__dirname, '../..');
-const spec = fs.readFileSync(path.join(root, 'docs/00_ASSESSMENT_SPEC.md'), 'utf8');
-const specSchema = spec.match(/```prisma\n([\s\S]*?)```/)[1];
+const specSchema = fs.readFileSync(path.join(root, 'tests/fixtures/spec/schema.prisma.txt'), 'utf8');
 const actualSchema = fs.readFileSync(path.join(root, 'prisma/schema.prisma'), 'utf8');
 
 /** Maps each model, enum, generator and datasource to its normalised lines, ignoring comments and spacing. */

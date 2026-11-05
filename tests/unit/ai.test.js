@@ -15,8 +15,7 @@ const { createAnalysisSteps } = require('../../src/pipeline/analysisSteps.js');
 const { isStepDone } = require('../../src/pipeline/steps.js');
 const { AUDIT_STEPS } = require('../../src/lib/auditSteps.js');
 
-const spec = fs.readFileSync(path.resolve(__dirname, '../../docs/00_ASSESSMENT_SPEC.md'), 'utf8');
-const specBlockAfter = (marker) => spec.slice(spec.indexOf(marker)).match(/```\n([\s\S]*?)```/)[1];
+const specFixture = (name) => fs.readFileSync(path.resolve(__dirname, '../fixtures/spec', name), 'utf8');
 
 const client = { websiteUrl: 'https://clinic.test', businessType: 'Dental clinic', city: 'Pune', state: 'Maharashtra' };
 const signals = {
@@ -32,8 +31,8 @@ const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 
 describe('prompts', () => {
   it('prompts match the spec exactly', () => {
-    expect(SYSTEM_PROMPT).toBe(specBlockAfter('**System Prompt**').trim());
-    expect(USER_TEMPLATE).toBe(specBlockAfter('**User Prompt Template').trim());
+    expect(SYSTEM_PROMPT).toBe(specFixture('system-prompt.txt').trim());
+    expect(USER_TEMPLATE).toBe(specFixture('user-template.txt').trim());
   });
 
   it('all variables are replaced', () => {
