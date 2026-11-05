@@ -19,7 +19,8 @@ test('a forged session cookie cannot open the admin portal', async ({ page, cont
 test('admin signs in and reaches the worklist', async ({ page }) => {
   await signIn(page, 'admin@demo.test');
   await expect(page).toHaveURL(/\/admin$/);
-  await expect(page.getByRole('heading', { name: 'Worklist' })).toBeVisible();
+  // The worklist opens with a sentence summing up the work (docs/UI_UX_DESIGN.md section 6.1).
+  await expect(page.getByRole('heading', { name: 'Running now' })).toBeVisible();
 });
 
 test('client signs in and sees their business name from the database', async ({ page }) => {

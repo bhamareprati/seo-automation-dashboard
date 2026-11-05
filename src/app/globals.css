@@ -45,6 +45,18 @@
   }
 }
 
+/* The one deliberate animation: a report's score marker slides to its value when first shown. */
+@keyframes strip-marker-enter {
+  from {
+    left: 0;
+    opacity: 0;
+  }
+}
+
+.strip-marker-enter {
+  animation: strip-marker-enter 400ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

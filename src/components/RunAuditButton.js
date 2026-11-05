@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { message } from '@/lib/messages';
 
 /** Starts an audit and opens it. If one is already running, opens that one instead. */
-export function RunAuditButton({ clientId, label = 'Run audit' }) {
+export function RunAuditButton({ clientId, label = 'Run audit', size = 'sm' }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -34,7 +34,7 @@ export function RunAuditButton({ clientId, label = 'Run audit' }) {
   }
 
   return (
-    <Button size="sm" onClick={run} disabled={busy}>
+    <Button size={size} onClick={run} disabled={busy}>
       {label}
     </Button>
   );

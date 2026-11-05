@@ -5,7 +5,9 @@
 const MESSAGES = {
   'M-LOGIN-HINT': 'Reviewing this demo? Test logins are in the README.',
   'M-LOGIN-FAIL': "That email and password don't match. Check them and try again.",
+  'M-LOGIN-EMPTY': 'Enter your email and password.',
   'M-AUTH-EXPIRED': 'Your session ended. Sign in again to continue.',
+  'M-RECONNECTING': 'Reconnecting to get the latest progress.',
   'M-FORBIDDEN': 'This report belongs to another account.',
   'M-NOT-FOUND': "This audit doesn't exist. Go back to the list to pick another.",
   'M-LOAD-FAIL': "This page didn't load. Reload to try again.",

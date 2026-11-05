@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AddClientDialog } from '@/components/AddClientDialog';
 import { RunAuditButton } from '@/components/RunAuditButton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ACTIVE_STATUSES, STATUS_DISPLAY } from '@/lib/auditSteps';
@@ -26,7 +27,10 @@ export default async function ClientsPage() {
 
   return (
     <>
-      <h1 className="text-title">Clients</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-title">Clients</h1>
+        <AddClientDialog />
+      </div>
       {clients.length === 0 ? (
         <p className="mt-4 text-muted-foreground">{message('M-EMPTY-CLIENTS')}</p>
       ) : (

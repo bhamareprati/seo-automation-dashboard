@@ -14,7 +14,7 @@ async function handleLogin(request, deps) {
   try {
     requireSameOrigin(request, deps.env);
     const body = LoginBody.safeParse(await request.json().catch(() => null));
-    if (!body.success) throw new ValidationError('Enter your email and password.');
+    if (!body.success) throw new ValidationError(message('M-LOGIN-EMPTY'));
 
     const session = await authenticate(body.data, deps);
     if (!session) throw new UnauthenticatedError(message('M-LOGIN-FAIL'));
