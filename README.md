@@ -2,7 +2,7 @@
 
 Automated website SEO audits. An admin starts an audit, or a monthly schedule does. A background job crawls the site, collects signals, asks Claude for a structured report, saves it, makes a PDF and delivers it. The client signs in to read their own report.
 
-**Live app:** Added when deployed
+**Live app:** https://seo-automation-dashboard-tau.vercel.app
 
 ## Test logins
 
