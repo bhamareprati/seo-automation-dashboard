@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
-import { ACTIVE_STATUSES, AUDIT_STEPS, STATUS_DISPLAY } from '@/lib/auditSteps';
+import { ACTIVE_STATUSES, AUDIT_STEPS, STATUS_DISPLAY, stepDisplayLabel } from '@/lib/auditSteps';
 import { message } from '@/lib/messages';
 import { cn } from '@/lib/utils';
 
@@ -22,12 +22,6 @@ function stepState(step, index, audit) {
   return 'pending';
 }
 
-/** Never lists "Analysing with Claude" for an audit that used the sample analysis. */
-function stepLabel(step, audit) {
-  if (!step.sampleLabel) return step.label;
-  return audit.currentStep === step.sampleLabel || audit.dataMode?.aiSource === 'mock' ? step.sampleLabel : step.label;
-}
-
 const STEP_MARK = {
   done: { mark: '✓', className: 'text-good', sr: 'Done' },
   current: { mark: '●', className: 'text-methylene', sr: 'In progress' },
@@ -35,7 +29,7 @@ const STEP_MARK = {
   pending: { mark: '○', className: 'text-muted-foreground', sr: 'Not started' },
 };
 
-export function AuditProgress({ auditId, clientName, initial, queueName }) {
+export function AuditProgress({ auditId, clientName, initial, queueName, usesSampleAnalysis }) {
   const router = useRouter();
   const [audit, setAudit] = useState(initial);
   const [stale, setStale] = useState(false);
@@ -132,7 +126,7 @@ export function AuditProgress({ auditId, clientName, initial, queueName }) {
                   </span>
                   <span className={state === 'pending' ? 'text-muted-foreground' : undefined}>
                     <span className="sr-only">{sr}: </span>
-                    {stepLabel(step, audit)}
+                    {stepDisplayLabel(step, { aiSource: audit.dataMode?.aiSource, usesSampleAnalysis })}
                   </span>
                 </li>
               );

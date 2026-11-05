@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
-const { AUDIT_STEPS } = require('../../src/lib/auditSteps.js');
+const { AUDIT_STEPS, stepDisplayLabel } = require('../../src/lib/auditSteps.js');
 const { CrawlError } = require('../../src/lib/errors.js');
 const { message } = require('../../src/lib/messages.js');
 const { runAudit } = require('../../src/pipeline/runAudit.js');
@@ -82,6 +82,25 @@ describe('runAudit', () => {
     const sleep = vi.fn(async () => {});
     const steps = createSteps({ store: {}, env: {}, usedMocks: true, delayMs: 5, timeoutMs: 100, sleep });
     expect(Object.keys(steps).sort()).toEqual(AUDIT_STEPS.map((s) => s.key).sort());
+  });
+});
+
+describe('step names shown in the portal', () => {
+  const analysis = AUDIT_STEPS.find((s) => s.key === 'analysis');
+  const crawl = AUDIT_STEPS.find((s) => s.key === 'crawl');
+
+  it('never says Claude for a sample analysis, while running or afterwards', () => {
+    expect(stepDisplayLabel(analysis, { aiSource: null, usesSampleAnalysis: true })).toBe('Preparing sample analysis');
+    expect(stepDisplayLabel(analysis, { aiSource: 'mock', usesSampleAnalysis: false })).toBe('Preparing sample analysis');
+  });
+
+  it('says Claude when Claude is used, and what the saved audit used wins', () => {
+    expect(stepDisplayLabel(analysis, { aiSource: null, usesSampleAnalysis: false })).toBe('Analysing with Claude');
+    expect(stepDisplayLabel(analysis, { aiSource: 'claude', usesSampleAnalysis: true })).toBe('Analysing with Claude');
+  });
+
+  it('leaves other steps alone', () => {
+    expect(stepDisplayLabel(crawl, { aiSource: 'mock', usesSampleAnalysis: true })).toBe('Crawling website');
   });
 });
 

@@ -28,4 +28,15 @@ const STATUS_DISPLAY = {
   FAILED: { label: 'Failed', className: 'text-poor' },
 };
 
-module.exports = { WAITING_LABEL, AUDIT_STEPS, ACTIVE_STATUSES, STATUS_DISPLAY };
+/**
+ * The name to show for a step. Never says "Analysing with Claude" for a sample analysis.
+ * @param {{ label: string, sampleLabel?: string }} step
+ * @param {{ aiSource?: string | null, usesSampleAnalysis?: boolean }} state aiSource is known once an audit has saved its result
+ */
+function stepDisplayLabel(step, { aiSource, usesSampleAnalysis }) {
+  if (!step.sampleLabel) return step.label;
+  const sample = aiSource ? aiSource === 'mock' : Boolean(usesSampleAnalysis);
+  return sample ? step.sampleLabel : step.label;
+}
+
+module.exports = { WAITING_LABEL, AUDIT_STEPS, ACTIVE_STATUSES, STATUS_DISPLAY, stepDisplayLabel };

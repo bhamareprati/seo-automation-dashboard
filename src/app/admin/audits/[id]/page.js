@@ -6,6 +6,7 @@ import { RunAuditButton } from '@/components/RunAuditButton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AUDIT_STEPS } from '@/lib/auditSteps';
+import { getEnv } from '@/lib/env';
 import { message } from '@/lib/messages';
 import { prisma } from '@/lib/prisma';
 import { JOB_NAME, QUEUE_NAME, getAuditQueue } from '@/lib/queue';
@@ -102,6 +103,7 @@ export default async function AuditPage({ params }) {
         auditId={audit.id}
         clientName={client.name}
         queueName={QUEUE_NAME}
+        usesSampleAnalysis={!getEnv().ANTHROPIC_API_KEY}
         initial={{
           status: audit.status,
           progress: audit.progress,
