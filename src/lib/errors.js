@@ -1,6 +1,6 @@
 const { logger } = require('./logger');
 
-/** Base class. `messageId` points at the user-facing text in docs/UI_UX_DESIGN.md section 9. */
+/** Base class. `messageId` points at the user-facing text in lib/messages.js. */
 class AppError extends Error {
   constructor(message, { code, status = 500, messageId, retryable = true, integration } = {}) {
     super(message);

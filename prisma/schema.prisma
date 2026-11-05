@@ -36,7 +36,7 @@ model Audit {
   createdAt      DateTime    @default(now())
   completedAt    DateTime?
   notifications  Notification[]
-  report         AuditReport?                   // added: durable PDF bytes (see docs/PRD.md G-03)
+  report         AuditReport?                   // added: durable PDF bytes, because /tmp isn't shared on Vercel
   @@index([clientId, createdAt])
 }
 model Notification {

@@ -4,7 +4,7 @@ const { applyListLimits } = require('./schema');
 const TWO_DAYS_SECONDS = 48 * 60 * 60;
 
 /**
- * The mode matrix in docs/TRD.md section 5.2. USE_MOCKS=false with no key never gets here,
+ * Real Claude when a key is set, otherwise the sample. USE_MOCKS=false with no key never gets here,
  * because configuration refuses to load.
  * @returns {'claude' | 'mock'}
  */

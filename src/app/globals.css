@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tokens from docs/UI_UX_DESIGN.md section 3, mapped onto the names shadcn/ui components expect. */
+/* Design tokens, mapped onto the names shadcn/ui components expect. */
 @layer base {
   :root {
     --background: #f4f7f8; /* slide */

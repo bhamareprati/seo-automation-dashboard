@@ -2,7 +2,7 @@
 
 import { Toaster as Sonner } from 'sonner';
 
-// Light theme only (docs/UI_UX_DESIGN.md section 3.1), so the theme provider from the template is not needed.
+// The app is light theme only, so the theme provider from the template is not needed.
 const Toaster = (props) => (
   <Sonner
     theme="light"

@@ -3,10 +3,8 @@
 .env.*
 !.env.example
 
-# The assessment PDF's text is marked confidential, and the interview notes are personal.
-# The repo is public, so both stay on the owner's machine only.
-docs/00_ASSESSMENT_SPEC.md
-docs/INTERVIEW_NOTES.md
+# Private planning notes. They stay on the owner's machine and are never published.
+/docs/
 
 # Dependencies and build output
 node_modules/
@@ -15,7 +13,7 @@ node_modules/
 /build/
 /coverage/
 
-# Generated reports and the original assessment PDF. Anchored to the root, so src/reports stays tracked.
+# Generated reports and any PDF. Anchored to the root, so src/reports stays tracked.
 /reports/
 *.pdf
 

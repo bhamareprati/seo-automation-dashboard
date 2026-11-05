@@ -1,9 +1,9 @@
 /**
- * Every user-facing message. A test checks this list against docs/UI_UX_DESIGN.md section 9.
+ * Every user-facing message. A test checks this list against a fixed copy.
  * This file also loads in the browser, so it must stay free of secrets and Node-only imports.
  */
 const MESSAGES = {
-  'M-LOGIN-HINT': 'Reviewing this demo? Test logins are in the README.',
+  'M-LOGIN-HINT': 'Reviewing this demo? Use the test logins from the submission email.',
   'M-LOGIN-FAIL': "That email and password don't match. Check them and try again.",
   'M-LOGIN-EMPTY': 'Enter your email and password.',
   'M-AUTH-EXPIRED': 'Your session ended. Sign in again to continue.',

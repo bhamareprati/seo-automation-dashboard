@@ -1,8 +1,18 @@
 const fs = require('node:fs');
 
-// Demo logins live in the README, as the spec asks.
-const readme = fs.readFileSync('README.md', 'utf8');
-const passwordFor = (email) => readme.match(new RegExp(`\\| ${email} \\| (\\S+) \\|`))[1];
+// Demo passwords live in a local file that Git ignores, because this repository is public.
+const logins = Object.fromEntries(
+  fs
+    .readFileSync('.env.test-logins', 'utf8')
+    .split(/\r?\n/)
+    .filter((line) => /^[A-Z0-9_]+=/.test(line))
+    .map((line) => {
+      const at = line.indexOf('=');
+      return [line.slice(0, at), line.slice(at + 1).trim()];
+    }),
+);
+
+const passwordFor = (email) => (email.startsWith('admin@') ? logins.E2E_ADMIN_PASSWORD : logins.E2E_CLIENT_PASSWORD);
 
 async function signIn(page, email) {
   await page.goto('/login');

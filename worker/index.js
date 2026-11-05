@@ -1,5 +1,5 @@
 // Long-running worker for local development: npm run worker
-// Production uses the bounded runner instead (docs/TRD.md section 8.1). Same pipeline, different trigger.
+// Production uses the bounded runner instead. Same pipeline, different trigger.
 const { Worker } = require('bullmq');
 const { createRedis } = require('../src/lib/redis');
 const { QUEUE_NAME, processJob } = require('../src/pipeline');

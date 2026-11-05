@@ -1,6 +1,4 @@
-import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
@@ -39,11 +37,20 @@ describe('runAudit', () => {
     ]);
   });
 
-  it('step labels and progress match the table in the TRD', () => {
-    const trd = fs.readFileSync(path.resolve(__dirname, '../../docs/TRD.md'), 'utf8');
-    for (const { label, progress } of AUDIT_STEPS) {
-      expect(trd).toMatch(new RegExp(`\`${label}\`.*\\| ${progress} \\|`));
-    }
+  it('step labels and progress stay as agreed', () => {
+    expect(AUDIT_STEPS.map(({ label, progress }) => [label, progress])).toEqual([
+      ['Crawling website', 15],
+      ['Fetching PageSpeed data', 25],
+      ['Fetching Search Console data', 32],
+      ['Validating Schema.org markup', 40],
+      ['Analysing on-page SEO', 48],
+      ['Checking robots.txt and sitemap', 55],
+      ['Fetching keyword rankings', 62],
+      ['Analysing with Claude', 85],
+      ['Saving audit results', 90],
+      ['Generating PDF report', 96],
+      ['Sending notifications', 100],
+    ]);
   });
 
   it('progress only increases and ends at 100', async () => {

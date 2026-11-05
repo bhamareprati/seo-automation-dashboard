@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -40,7 +41,7 @@ function targetOf(fromFile, spec) {
 const FRAMEWORK = /^(next($|\/)|react($|\/)|react-dom($|\/))/;
 const CAPABILITIES = ['crawlers', 'analyzers', 'ai', 'reports', 'delivery'];
 
-/** The table in docs/ARCHITECTURE.md section 4. Returns the rule a file falls under. */
+/** Which imports each layer may use. Returns the rule a file falls under. */
 function ruleFor(file) {
   const inFolder = (name) => file.startsWith(`src/${name}/`);
   if (file.startsWith('src/app/api/')) {
@@ -107,10 +108,53 @@ describe('code rules', () => {
     expect(JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8')).git.deploymentEnabled).toBe(false);
   });
 
-  it('confidential and personal documents stay out of Git', () => {
+  it('private files stay out of Git', () => {
     const ignore = fs.readFileSync(path.join(root, '.gitignore'), 'utf8');
-    expect(ignore).toContain('docs/00_ASSESSMENT_SPEC.md');
-    expect(ignore).toContain('docs/INTERVIEW_NOTES.md');
+    for (const entry of ['.env', '.env.*', '!.env.example', '/docs/', '.vercel/', '.neon']) {
+      expect(ignore.split(/\r?\n/), entry).toContain(entry);
+    }
+    const tracked = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).split('\n');
+    const leaked = tracked.filter((f) => /^(docs\/|\.neon$|\.vercel\/)|(^|\/)\.env($|\.(?!example$))/.test(f));
+    expect(leaked).toEqual([]);
+  });
+
+  it('no credentials or private identifiers are in tracked files', () => {
+    // Generic shapes of real keys, built in pieces so this test doesn't match itself.
+    const PATTERNS = [
+      new RegExp(`sk-${'ant'}-[A-Za-z0-9]`),
+      new RegExp(`${'npg'}_[A-Za-z0-9]{6,}`),
+      new RegExp(`${'napi'}_[A-Za-z0-9]{6,}`),
+      new RegExp(`[a-z]+://[^\\s'"]+:[^\\s'"@]+@[^\\s'"]*(${'neon\\.tech'}|${'upstash\\.io'})`),
+    ];
+
+    // The actual private values come from local files Git ignores, so they're never written in a tracked file.
+    const readLocal = (name) => {
+      const file = path.join(root, name);
+      return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+    };
+    const envValues = `${readLocal('.env')}\n${readLocal('.env.test-logins')}`
+      .split(/\r?\n/)
+      .filter((line) => /^[A-Z0-9_]+=/.test(line))
+      .filter((line) => /(URL|SECRET|KEY|HASH|PASSWORD|TOKEN)/.test(line.split('=')[0]) && !line.startsWith('APP_URL'))
+      .map((line) => line.slice(line.indexOf('=') + 1).trim().replace(/^['"]|['"]$/g, ''));
+    const privateTerms = readLocal('.env.private-terms')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'));
+    const privateValues = [...envValues, ...privateTerms].filter((value) => value.length >= 3);
+
+    const tracked = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean);
+    const problems = tracked
+      .filter((f) => !/\.(ico|png|jpg|woff2?)$/.test(f))
+      .filter((f) => fs.existsSync(path.join(root, f)))
+      .flatMap((f) => {
+        const text = fs.readFileSync(path.join(root, f), 'utf8');
+        const lower = text.toLowerCase();
+        const shapes = PATTERNS.filter((pattern) => pattern.test(text)).map(() => `${f}: looks like a credential`);
+        const values = privateValues.filter((value) => lower.includes(value.toLowerCase())).map(() => `${f}: contains a private value`);
+        return [...shapes, ...values];
+      });
+    expect(problems).toEqual([]);
   });
 
   it('local servers listen on this machine only', () => {

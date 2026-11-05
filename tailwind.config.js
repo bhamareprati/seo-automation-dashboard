@@ -1,4 +1,4 @@
-/** Design tokens from docs/UI_UX_DESIGN.md section 3. @type {import('tailwindcss').Config} */
+/** Design tokens. @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/app/**/*.{js,jsx}', './src/components/**/*.{js,jsx}'],
   theme: {

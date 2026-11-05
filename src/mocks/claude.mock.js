@@ -1,4 +1,4 @@
-// Added to the spec's mocks (docs/PRD.md G-06). Used when no ANTHROPIC_API_KEY is set, as the spec allows.
+// Added to the spec's mocks. Used when no ANTHROPIC_API_KEY is set, as the spec allows.
 // This is a prepared example about the sample dental site, and the app always labels it "Sample analysis".
 module.exports = {
   audit_version: 'v1.0',

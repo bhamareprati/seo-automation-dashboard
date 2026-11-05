@@ -1,4 +1,4 @@
-// Added to the spec's mocks (docs/PRD.md G-06). The spec replaces Cloudflare R2 with a local reports folder.
+// Added to the spec's mocks. The spec replaces Cloudflare R2 with a local reports folder.
 const fs = require('node:fs/promises');
 const path = require('node:path');
 

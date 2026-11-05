@@ -44,7 +44,7 @@ async function runAudit(
   return { skipped: false };
 }
 
-/** A completed audit only runs again when its PDF is missing (docs/TRD.md section 9.3). */
+/** A completed audit only runs again when its PDF is missing. */
 const isRetryable = (audit) => Boolean(audit.result) && !audit.report;
 
 /** Adds this run's timings to the signals, keeping any timings from an earlier attempt. */

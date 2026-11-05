@@ -1,5 +1,5 @@
 /**
- * Reference ranges from docs/UI_UX_DESIGN.md section 4. Used by the portals and the PDF.
+ * Reference ranges for scores and Core Web Vitals. Used by the portals and the PDF.
  * Plain data and functions, so the browser can use them too.
  */
 const FLAGS = { GOOD: 'Good', WATCH: 'Needs work', POOR: 'Poor' };

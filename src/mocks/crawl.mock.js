@@ -1,4 +1,4 @@
-// Added to the spec's mocks (docs/PRD.md G-02). The spec's sample site does not exist on the internet,
+// Added to the spec's mocks. The spec's sample site does not exist on the internet,
 // so its crawl uses this page instead. Steps 4, 5 and 6 still run for real on this content.
 // The page has deliberate flaws, so an audit has something honest to find.
 

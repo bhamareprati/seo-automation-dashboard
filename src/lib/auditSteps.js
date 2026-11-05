@@ -1,6 +1,6 @@
 /**
  * The pipeline's steps, in the order fixed by the spec (section 3.2), with their labels and progress.
- * Plain data, so the browser can use it too. Table: docs/TRD.md section 9.1.
+ * Plain data, so the browser can use it too.
  */
 const WAITING_LABEL = 'Waiting to start';
 
@@ -20,7 +20,7 @@ const AUDIT_STEPS = [
 
 const ACTIVE_STATUSES = ['QUEUED', 'RUNNING'];
 
-/** Labels and colours from docs/UI_UX_DESIGN.md section 8. */
+/** Labels and colours for each audit status. */
 const STATUS_DISPLAY = {
   QUEUED: { label: 'Waiting', className: 'text-muted-foreground' },
   RUNNING: { label: 'Running', className: 'text-methylene' },
