@@ -6,12 +6,12 @@
 # Dependencies and build output
 node_modules/
 .next/
-out/
-build/
-coverage/
+/out/
+/build/
+/coverage/
 
-# Generated reports and the original assessment PDF
-reports/
+# Generated reports and the original assessment PDF. Anchored to the root, so src/reports stays tracked.
+/reports/
 *.pdf
 
 # Test output
