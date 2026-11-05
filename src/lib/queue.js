@@ -15,22 +15,31 @@ const jobOptions = (auditId) => ({
 });
 
 let queue;
+let connection;
 
 /** Created on first use. The offline queue is off so a route fails fast when Redis is down. */
 function getAuditQueue() {
   if (!queue) {
-    queue = new Queue(QUEUE_NAME, {
-      connection: createRedis({ enableOfflineQueue: false, maxRetriesPerRequest: 1 }),
-    });
+    connection = createRedis({ enableOfflineQueue: false, maxRetriesPerRequest: 1 });
+    queue = new Queue(QUEUE_NAME, { connection });
     queue.on('error', () => {});
   }
   return queue;
 }
 
+/** The queue's Redis connection, once ready, for small counters like the daily Claude cap. */
+async function getQueueRedis() {
+  await getAuditQueue().waitUntilReady();
+  return connection;
+}
+
 async function discardQueue() {
   const stale = queue;
+  const staleConnection = connection;
   queue = undefined;
+  connection = undefined;
   if (stale) await stale.close().catch(() => {});
+  if (staleConnection) staleConnection.disconnect();
 }
 
 function withTimeout(promise, ms) {
@@ -57,4 +66,4 @@ async function enqueueAudit(auditId) {
   }
 }
 
-module.exports = { QUEUE_NAME, JOB_NAME, jobOptions, getAuditQueue, enqueueAudit };
+module.exports = { QUEUE_NAME, JOB_NAME, jobOptions, getAuditQueue, getQueueRedis, enqueueAudit };

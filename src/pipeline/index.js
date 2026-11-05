@@ -4,7 +4,7 @@ const { analyzeWithClaude, createAnthropic } = require('../ai/claude');
 const { getEnv } = require('../lib/env');
 const { logger } = require('../lib/logger');
 const { prisma } = require('../lib/prisma');
-const { QUEUE_NAME, getAuditQueue } = require('../lib/queue');
+const { QUEUE_NAME, getAuditQueue, getQueueRedis } = require('../lib/queue');
 const { createRedis } = require('../lib/redis');
 const { createAuditStore } = require('./auditStore');
 const { cronTick } = require('./cronTick');
@@ -22,11 +22,7 @@ function auditDependencies() {
     usedMocks: env.useMocks,
     delayMs: env.MOCK_STEP_DELAY_MS,
     timeoutMs: env.CRAWL_REQUEST_TIMEOUT_MS,
-    getRedis: async () => {
-      const queue = getAuditQueue();
-      await queue.waitUntilReady();
-      return queue.client;
-    },
+    getRedis: getQueueRedis,
     analyzeWithClaude: (input) =>
       analyzeWithClaude(input, { anthropic: createAnthropic(env.ANTHROPIC_API_KEY), model: env.ANTHROPIC_MODEL }),
   });
