@@ -57,6 +57,11 @@ function readSessionCookie(request) {
   return null;
 }
 
+/** The session behind a standard Request, or null. */
+function getRequestSession(request, env) {
+  return verifySession(readSessionCookie(request), env.SESSION_SECRET);
+}
+
 function sessionCookie(token, env) {
   const secure = env.APP_URL.startsWith('https://') ? '; Secure' : '';
   return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_SECONDS}${secure}`;
@@ -97,6 +102,7 @@ module.exports = {
   verifySession,
   authenticate,
   readSessionCookie,
+  getRequestSession,
   sessionCookie,
   clearedSessionCookie,
   requireRole,
